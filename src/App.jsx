@@ -1,34 +1,41 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useState } from "react";
 import "./App.css";
+import RoomTable from "./Components/Rooms/RoomTable";
+import { getRooms } from "./api/roomService";
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import DashboardLayout from "./Components/Layout/DashboardLayout";
+import Dashboard from "./pages/Dasboard";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [rooms, setRooms] = useState([]);
+
+  const loadRooms = async () => {
+    try {
+      const response = await getRooms();
+      const data = response.data;
+      console.log(data);
+      setRooms(data);
+    } catch (errors) {
+      console.log(errors.message);
+    }
+  };
+
+  useEffect(() => {
+    loadRooms();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs text-stone-100">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Router>
+      <Routes>
+        {/* Layout with sidebar */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/room" element={<RoomTable roomData={rooms} />} />
+          {/* <Route path="/tenants" element={<Tenants />} /> */}
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
