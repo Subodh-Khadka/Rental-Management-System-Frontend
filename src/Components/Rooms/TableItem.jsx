@@ -4,18 +4,28 @@ import Button from "../Shared/Table/Button/Button";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-export default function TableItem({ room }) {
+export default function TableItem({ room, index, onEdit, onDelete }) {
   return (
     <TableRow key={room.roomId}>
-      {/* <td>{room.roomId}</td> */}
+      <TableCell>{index + 1}</TableCell>
       <TableCell>{room.roomTitle}</TableCell>
       <TableCell>{room.roomPrice}</TableCell>
-      <TableCell className="flex align-items-center">
-        <Button variant="icon" size="sm" className="text-blue-600-300">
+      <TableCell className="flex">
+        <Button
+          variant="icon"
+          size="sm"
+          className="text-blue-600"
+          onClick={() => onEdit(room)}
+        >
           <FaEdit size={20} className="mr-1" />
         </Button>
 
-        <Button variant="icon" size="" className=" text-red-500">
+        <Button
+          variant="icon"
+          size="sm"
+          className=" text-red-500"
+          onClick={() => onDelete(room)}
+        >
           <MdDelete size={20} className="mr-1" />
         </Button>
       </TableCell>

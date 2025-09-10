@@ -7,7 +7,9 @@ import {
   FaDollarSign,
   FaExchangeAlt,
   FaCalendarAlt,
+  FaBars,
 } from "react-icons/fa";
+import { RiContractFill } from "react-icons/ri";
 import rentalLogo from "../../../public/rental-logo.png";
 
 export default function Sidebar() {
@@ -33,7 +35,7 @@ export default function Sidebar() {
           <FaHome className="inline mr-2" /> Dashboard
         </NavLink>
         <NavLink
-          to="/room"
+          to="/rooms"
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`
           }
@@ -57,7 +59,7 @@ export default function Sidebar() {
           <FaDollarSign className="inline mr-2" /> Payments
         </NavLink>
         <NavLink
-          to="/Payments"
+          to="/a"
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`
           }
@@ -65,12 +67,20 @@ export default function Sidebar() {
           <FaExchangeAlt className="inline mr-2" /> Transactions
         </NavLink>
         <NavLink
-          to="/Payments"
+          to="/monthlyCharges"
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`
           }
         >
           <FaCalendarAlt className="inline mr-2" /> Monthly Charge
+        </NavLink>
+        <NavLink
+          to="/rentalContracts"
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
+        >
+          <RiContractFill /> Rental Contracts
         </NavLink>
       </nav>
     </aside>

@@ -5,3 +5,4 @@ export default function TableHeaderCell({ children, className = "" }) {
     </th>
   );
 }
+  
