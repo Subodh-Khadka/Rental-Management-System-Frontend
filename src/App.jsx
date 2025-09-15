@@ -9,6 +9,7 @@ import RoomPage from "./pages/RoomPage";
 import PaymentPage from "./pages/PaymentPage";
 import TenantPage from "./pages/TenantPage";
 import RentalContractPage from "./pages/RentalContractPage";
+import ChargeTemplate from "./pages/ChargeTemplate";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/tenants" element={<TenantPage />} />
           <Route path="/payments" element={<PaymentPage />} />
           <Route path="/rentalContracts" element={<RentalContractPage />} />
+          <Route path="/chargeTemplates" element={<ChargeTemplate />} />
         </Route>
       </Routes>
     </Router>

@@ -10,6 +10,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 import { RiContractFill } from "react-icons/ri";
+import { VscNotebookTemplate } from "react-icons/vsc";
 import rentalLogo from "../../../public/rental-logo.png";
 
 export default function Sidebar() {
@@ -81,6 +82,15 @@ export default function Sidebar() {
           }
         >
           <RiContractFill /> Rental Contracts
+        </NavLink>
+        <NavLink
+          to="/chargeTemplates"
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
+        >
+          <VscNotebookTemplate style={{ strokeWidth: 1 }} />
+          Charge Templates
         </NavLink>
       </nav>
     </aside>
