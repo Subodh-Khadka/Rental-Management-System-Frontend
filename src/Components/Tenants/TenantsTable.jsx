@@ -104,15 +104,11 @@ export default function TenantsTable({
             </thead>
             <tbody>
               {tenantsData.map((tenant, index) => {
-                const assignedRoom = (rooms || []).find(
-                  (r) => r.roomId === tenant.roomId
-                );
                 return (
                   <TenantItem
                     key={tenant.tenantId}
                     tenant={tenant}
                     index={index}
-                    assignedRoom={assignedRoom}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                   />

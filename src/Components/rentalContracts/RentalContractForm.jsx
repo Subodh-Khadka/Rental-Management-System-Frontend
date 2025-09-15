@@ -66,6 +66,12 @@ export default function RentalContractForm({
     onSave(rentalContract ? updatedRentalContract : rentalContractToCreate);
   }
 
+  console.log("RentalContractForm props:", {
+    rentalContract,
+    tenants,
+    rooms,
+  });
+
   return (
     <>
       <form

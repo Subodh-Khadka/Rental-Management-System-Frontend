@@ -5,13 +5,7 @@ import Button from "../Shared/Table/Button/Button";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-export default function TenantItem({
-  tenant,
-  index,
-  assignedRoom,
-  onEdit,
-  onDelete,
-}) {
+export default function TenantItem({ tenant, index, onEdit, onDelete }) {
   return (
     <>
       <TableRow key={tenant.tenantId}>
@@ -21,7 +15,7 @@ export default function TenantItem({
         <TableCell>
           {tenant.emailAddress ? tenant.emailAddress : "N/A"}
         </TableCell>
-        <TableCell>{assignedRoom?.roomTitle || "N/A"}</TableCell>
+        <TableCell>{tenant?.roomTitle || "N/A"}</TableCell>
         <TableCell>
           <Button
             size="sm"

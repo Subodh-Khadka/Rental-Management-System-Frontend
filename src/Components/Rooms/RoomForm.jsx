@@ -18,7 +18,6 @@ export default function RoomForm({ room, onCancel, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(room);
 
     const roomToCreate = {
       roomTitle: title,

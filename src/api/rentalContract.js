@@ -35,8 +35,6 @@ export async function getRentalContractById(rentalContractId) {
 }
 
 export async function createRentalContract(rentalContract) {
-  console.log("1234");
-  console.log("contract", rentalContract);
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: {

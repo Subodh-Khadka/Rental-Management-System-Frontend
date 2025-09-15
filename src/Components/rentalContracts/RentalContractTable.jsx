@@ -30,7 +30,6 @@ export default function RentalContractTable({
   }
 
   async function handleSave(rentalContract) {
-    console.log(rentalContract);
     try {
       if (editingRentalContract) {
         const updatedRentalContract = await updateRentalContract(
