@@ -56,6 +56,7 @@ export async function createChargeTemplate(chargeTemplate) {
 }
 
 export async function updateChargeTemplate(chargeTemplateId, chargeTemplate) {
+  console.log(chargeTemplateId, chargeTemplate);
   const response = await fetch(`${BASE_URL}/${chargeTemplateId}`, {
     method: "PUT",
     headers: {

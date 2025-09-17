@@ -1,5 +1,4 @@
 import { useState } from "react";
-import TableItem from "../Rooms/TableItem";
 import TableHeaderCell from "../Shared/Table/TableHeaderCell";
 import RentPaymentItem from "./RentPaymentItem";
 import {

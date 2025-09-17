@@ -3,8 +3,6 @@ import TableHeaderCell from "../Shared/Table/TableHeaderCell";
 import Button from "../Shared/Table/Button/Button";
 import { IoAddOutline } from "react-icons/io5";
 import ChargeTemplateForm from "./ChargeTemplateForm";
-import TableRow from "../Shared/Table/TableRow";
-import TableCell from "../Shared/Table/TabelCell";
 
 import {
   createChargeTemplate,
@@ -43,8 +41,8 @@ export default function ChargeTemplateTable({
         setCreatingTemplate(false);
       }
     } catch (err) {
-      console.log("Error saving template", err);
-      alert("Failed To save template");
+      console.error("Error saving template", err);
+      alert("Failed to save template");
     }
   }
 
@@ -53,7 +51,7 @@ export default function ChargeTemplateTable({
       await deleteChargeTemplate(chargeTemplateId);
       onDelete(chargeTemplateId);
     } catch (err) {
-      console.log(err, "Error deleting template");
+      console.error("Error deleting template", err);
     }
   }
 
@@ -75,7 +73,7 @@ export default function ChargeTemplateTable({
       <section className="bg-white p-4 rounded-2xl shadow-lg">
         <h1 className="text-lg text-center font-bold mb-3">Charge Templates</h1>
 
-        {error && <h1>{error}</h1>}
+        {error && <h1 className="text-red-500 text-center mb-2">{error}</h1>}
 
         {!creatingTemplate && !editingTemplate && (
           <section>
@@ -92,8 +90,9 @@ export default function ChargeTemplateTable({
             </Button>
           </section>
         )}
+
         <div>
-          <table className="w-full text-left table-auto table-bordered text-sm-center">
+          <table className="w-full text-left table-auto border text-sm">
             <thead>
               <tr>
                 <TableHeaderCell>S.N</TableHeaderCell>
@@ -117,7 +116,7 @@ export default function ChargeTemplateTable({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">
+                  <td colSpan={6} className="text-center py-4">
                     <span>No Data Available</span>
                   </td>
                 </tr>

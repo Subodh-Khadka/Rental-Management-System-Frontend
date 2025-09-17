@@ -11,7 +11,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
   const [defaultAmount, setDefaultAmount] = useState(
     template?.defaultAmount || 0
   );
-  const [IsVariable, setIsVariable] = useState(template?.isVariable || "N/A");
+  const [isVariable, setIsVariable] = useState(template?.isVariable ?? false);
   const [chargeType, setChargeType] = useState(template?.chargeType || "");
   const [calculationMethod, setCalculationMethod] = useState(
     template?.calculationMethod || ""
@@ -21,32 +21,31 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
     setSelectedTemplateId(e.target.value);
   }
   function handleDefaultAmount(e) {
-    setDefaultAmount(parseFloat(e.target.value));
+    const value = e.target.value;
+    setDefaultAmount(value === "" ? 0 : parseFloat(value));
   }
-  function handleIsVariable(e) {
-    setIsVariable(e.target.value);
+  function handleIsVariable() {
+    setIsVariable(true);
   }
   function handleChargeType(e) {
-    setIsVariable(e.target.value);
+    setChargeType(e.target.value);
   }
   function handleCalculationMethod(e) {
-    setIsVariable(e.target.value);
+    setCalculationMethod(e.target.value);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    // const rentPaymentToCreate = {
-    //   paymentId: rentPayment?.paymentId || undefined,
-    //   rentalContractId: selectedContractId,
-    //   paymentMonth: ConvertToIsoString(paymentDate),
-    //   roomPrice: roomPrice,
-    //   paidAmount: paidAmount,
-    //   totalAmount: totalAmount,
-    //   dueAmount: dueAmount,
-    // };
+    const templatePayload = {
+      chargeType,
+      defaultAmount,
+      isVariable,
+      calculationMethod,
+      ...(template ? { chargeTemplateId: template.chargeTemplateId } : {}),
+    };
 
-    // onSave(rentPaymentToCreate);
+    onSave(templatePayload);
   }
 
   const inputClass =
@@ -55,7 +54,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-4 rounded-xl flex flex-col gap-4 mb-3"
+      className="bg-white p-4 rounded-xl flex flex-col gap-4 mb-3 w-100"
     >
       {/* Header */}
       <div className="flex items-center gap-2">
@@ -66,7 +65,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
       </div>
 
       {/* Main content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {/* Left column */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col">
@@ -75,30 +74,48 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
               type="text"
               value={chargeType}
               className={inputClass}
-              readOnly
-              onChange={handleDefaultAmount}
+              required
+              onChange={handleChargeType}
             />
           </div>
           <div className="flex flex-col">
             <label className="font-bold">Default Amount</label>
             <input
-              type="text"
+              type="number"
               value={defaultAmount}
               className={inputClass}
-              readOnly
               onChange={handleDefaultAmount}
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="font-bold">Is Variable</label>
-            <input
-              type="number"
-              value={IsVariable}
-              className={inputClass}
-              readOnly
-              onChange={handleIsVariable}
-            />
+            <label className="font-bold mb-1">Is Variable</label>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="isVariable"
+                  value="true"
+                  checked={isVariable === true}
+                  onChange={() => setIsVariable(true)}
+                  className={inputClass}
+                />
+                Yes
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="isVariable"
+                  value="false"
+                  checked={isVariable === false}
+                  onChange={() => setIsVariable(false)}
+                  className={inputClass}
+                  required
+                />
+                No
+              </label>
+            </div>
           </div>
 
           <div className="flex flex-col">
@@ -108,6 +125,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
               value={calculationMethod}
               className={inputClass}
               onChange={handleCalculationMethod}
+              required
             />
           </div>
 

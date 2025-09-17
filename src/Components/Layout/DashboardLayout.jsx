@@ -10,7 +10,7 @@ export default function DashboardLayout() {
     setShowSidebar(!showSidebar);
   }
   return (
-    <div className="flex min-h-screen rounded-2xl overflow-hidden text-sm relative">
+    <div className="flex min-h-screen text-sm relative">
       {showSidebar && (
         <aside className={`w-64 bg-white text-black flex flex-col `}>
           <Sidebar />

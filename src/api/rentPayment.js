@@ -57,7 +57,6 @@ export async function createRentPayment(rentpayment) {
 }
 
 export async function updateRentPayment(rentPaymentId, rentpayment) {
-  console.log(rentpayment);
   const response = await fetch(`${BASE_URL}/${rentPaymentId}`, {
     method: "PUT",
     headers: {

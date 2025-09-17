@@ -45,27 +45,32 @@ export default function RentPaymentForm({
     roomPrice +
     monthlyCharges.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
 
-  const dueAmount = totalAmount - (paidAmount || 0);
+  const dueAmount = totalAmount - (parseFloat(paidAmount) || 0);
 
   function handlePaymentDate(e) {
     setPaymentDate(e.target.value);
   }
   function handlePaidAmountChange(e) {
-    setPaidAmount(parseFloat(e.target.value));
+    const value = e.target.value;
+    setPaidAmount(value === "" ? 0 : parseFloat(value));
   }
 
   function handleSubmit(e) {
     e.preventDefault();
 
     const rentPaymentToCreate = {
-      paymentId: rentPayment?.paymentId || undefined,
       rentalContractId: selectedContractId,
       paymentMonth: ConvertToIsoString(paymentDate),
-      roomPrice: roomPrice,
-      paidAmount: paidAmount,
-      totalAmount: totalAmount,
-      dueAmount: dueAmount,
+      roomPrice,
+      paidAmount,
+      totalAmount,
+      dueAmount,
     };
+
+    // only add paymentId if editing
+    if (rentPayment?.paymentId) {
+      rentPaymentToCreate.paymentId = rentPayment.paymentId;
+    }
 
     onSave(rentPaymentToCreate);
   }
@@ -146,6 +151,7 @@ export default function RentPaymentForm({
               type="datetime-local"
               value={paymentDate}
               className={inputClass}
+              required
               onChange={handlePaymentDate}
             />
           </div>

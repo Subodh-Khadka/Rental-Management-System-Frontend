@@ -11,7 +11,6 @@ export default function useChargeTemplate() {
     setError(null);
     try {
       const data = await getChargeTemplates();
-      console.log(data);
       setChargeTemplates(data);
     } catch (err) {
       setError(err.message || "Failed to load templates");

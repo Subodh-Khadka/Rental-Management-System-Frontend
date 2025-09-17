@@ -35,6 +35,7 @@ export default function Sidebar() {
         >
           <FaHome className="inline mr-2" /> Dashboard
         </NavLink>
+
         <NavLink
           to="/rooms"
           className={({ isActive }) =>
@@ -43,6 +44,7 @@ export default function Sidebar() {
         >
           <FaDoorClosed className="inline mr-2" /> Rooms
         </NavLink>
+
         <NavLink
           to="/tenants"
           className={({ isActive }) =>
@@ -51,6 +53,7 @@ export default function Sidebar() {
         >
           <FaUsers className="inline mr-2" /> Tenants
         </NavLink>
+
         <NavLink
           to="/Payments"
           className={({ isActive }) =>
@@ -59,14 +62,16 @@ export default function Sidebar() {
         >
           <FaDollarSign className="inline mr-2" /> Payments
         </NavLink>
+
         <NavLink
-          to="/a"
+          to="/generateMonthlyCharges"
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`
           }
         >
-          <FaExchangeAlt className="inline mr-2" /> Transactions
+          <FaCalendarAlt className="inline mr-2" /> Generate M-Charges
         </NavLink>
+
         <NavLink
           to="/monthlyCharges"
           className={({ isActive }) =>
@@ -75,6 +80,7 @@ export default function Sidebar() {
         >
           <FaCalendarAlt className="inline mr-2" /> Monthly Charge
         </NavLink>
+
         <NavLink
           to="/rentalContracts"
           className={({ isActive }) =>
@@ -83,6 +89,7 @@ export default function Sidebar() {
         >
           <RiContractFill /> Rental Contracts
         </NavLink>
+
         <NavLink
           to="/chargeTemplates"
           className={({ isActive }) =>
@@ -91,6 +98,15 @@ export default function Sidebar() {
         >
           <VscNotebookTemplate style={{ strokeWidth: 1 }} />
           Charge Templates
+        </NavLink>
+
+        <NavLink
+          to="/a"
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
+        >
+          <FaExchangeAlt className="inline mr-2" /> Transactions
         </NavLink>
       </nav>
     </aside>
