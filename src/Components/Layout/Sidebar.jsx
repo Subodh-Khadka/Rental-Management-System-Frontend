@@ -55,6 +55,15 @@ export default function Sidebar() {
         </NavLink>
 
         <NavLink
+          to="/generateRentPayments"
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
+        >
+          <FaDollarSign className="inline mr-2" /> Generate M-Payment
+        </NavLink>
+
+        <NavLink
           to="/Payments"
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`

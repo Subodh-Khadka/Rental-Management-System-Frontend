@@ -12,6 +12,7 @@ import RentalContractPage from "./pages/RentalContractPage";
 import ChargeTemplate from "./pages/ChargeTemplate";
 import MonthlyCharge from "./pages/MonthlyCharge";
 import GenerateMonthlyCharge from "./pages/GenerateMonthlyCharge";
+import GenerateRentPayment from "./pages/GenerateRentPayment";
 
 function App() {
   return (
@@ -25,6 +26,10 @@ function App() {
           <Route path="/rentalContracts" element={<RentalContractPage />} />
           <Route path="/chargeTemplates" element={<ChargeTemplate />} />
           <Route path="monthlyCharges" element={<MonthlyCharge />} />
+          <Route
+            path="/generateRentPayments"
+            element={<GenerateRentPayment />}
+          />
           <Route
             path="/generateMonthlyCharges"
             element={<GenerateMonthlyCharge />}

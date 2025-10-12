@@ -13,6 +13,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
   );
   const [isVariable, setIsVariable] = useState(template?.isVariable ?? false);
   const [chargeType, setChargeType] = useState(template?.chargeType || "");
+  const [IsActive, setIsActive] = useState(template?.IsActive || false);
   const [calculationMethod, setCalculationMethod] = useState(
     template?.calculationMethod || ""
   );
@@ -42,6 +43,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
       defaultAmount,
       isVariable,
       calculationMethod,
+      isActive: IsActive, // boolean,
       ...(template ? { chargeTemplateId: template.chargeTemplateId } : {}),
     };
 
@@ -126,6 +128,18 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
               className={inputClass}
               onChange={handleCalculationMethod}
               required
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="IsActive" className="font-bold">
+              Active:
+            </label>
+            <input
+              type="checkbox"
+              checked={IsActive || false} // boolean value
+              onChange={(e) => setIsActive(e.target.checked)}
+              className="w-5 h-5"
             />
           </div>
 

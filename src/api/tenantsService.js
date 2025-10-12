@@ -39,7 +39,6 @@ export async function createTenant(tenant) {
 }
 
 export async function updateTenant(tenantId, tenant) {
-  console.log(tenantId, tenant);
   const response = await fetch(`${BASE_URL}/${tenantId}`, {
     method: "PUT",
     headers: {

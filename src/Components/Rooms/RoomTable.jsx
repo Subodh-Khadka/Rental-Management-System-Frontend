@@ -88,6 +88,7 @@ export default function RoomTable({
                 <TableHeaderCell>S.N</TableHeaderCell>
                 <TableHeaderCell>Room Title</TableHeaderCell>
                 <TableHeaderCell>Room Price</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
                 <TableHeaderCell>Actions</TableHeaderCell>
               </tr>
             </thead>

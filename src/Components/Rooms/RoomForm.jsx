@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import Button from "../Shared/Table/Button/Button";
 import { MdOutlineCancel } from "react-icons/md";
 import { GrSave } from "react-icons/gr";
@@ -7,6 +7,7 @@ export default function RoomForm({ room, onCancel, onSave }) {
   // If `room` exists, it's edit mode
   const [title, setTitle] = useState(room?.roomTitle || "");
   const [price, setPrice] = useState(room?.roomPrice || "");
+  const [IsActive, setIsActive] = useState(room?.IsActive || false);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -22,12 +23,14 @@ export default function RoomForm({ room, onCancel, onSave }) {
     const roomToCreate = {
       roomTitle: title,
       roomPrice: price,
+      isActive: IsActive, // boolean
     };
 
     const updatedRoom = {
       ...room,
       roomTitle: title,
       roomPrice: price,
+      isActive: IsActive, // boolean
     };
 
     onSave(room ? updatedRoom : roomToCreate);
@@ -64,6 +67,18 @@ export default function RoomForm({ room, onCancel, onSave }) {
           onChange={handlePriceChange}
           className="bg-stone-100 shadow-sm p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
           required
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label htmlFor="IsActive" className="font-bold">
+          Active:
+        </label>
+        <input
+          type="checkbox"
+          checked={IsActive || false} // boolean value
+          onChange={(e) => setIsActive(e.target.checked)}
+          className="w-5 h-5"
         />
       </div>
 

@@ -41,8 +41,8 @@ export default function ChargeTemplateTable({
         setCreatingTemplate(false);
       }
     } catch (err) {
-      console.error("Error saving template", err);
-      alert("Failed to save template");
+      console.log("Error saving template", err);
+      alert("Failed To save template");
     }
   }
 
@@ -51,7 +51,7 @@ export default function ChargeTemplateTable({
       await deleteChargeTemplate(chargeTemplateId);
       onDelete(chargeTemplateId);
     } catch (err) {
-      console.error("Error deleting template", err);
+      console.log(err, "Error deleting template");
     }
   }
 
@@ -73,7 +73,7 @@ export default function ChargeTemplateTable({
       <section className="bg-white p-4 rounded-2xl shadow-lg">
         <h1 className="text-lg text-center font-bold mb-3">Charge Templates</h1>
 
-        {error && <h1 className="text-red-500 text-center mb-2">{error}</h1>}
+        {error && <h1>{error}</h1>}
 
         {!creatingTemplate && !editingTemplate && (
           <section>
@@ -90,9 +90,8 @@ export default function ChargeTemplateTable({
             </Button>
           </section>
         )}
-
         <div>
-          <table className="w-full text-left table-auto border text-sm">
+          <table className="w-full text-left table-auto table-bordered text-sm-center">
             <thead>
               <tr>
                 <TableHeaderCell>S.N</TableHeaderCell>
@@ -100,6 +99,7 @@ export default function ChargeTemplateTable({
                 <TableHeaderCell>Default Amount</TableHeaderCell>
                 <TableHeaderCell>Is Variable</TableHeaderCell>
                 <TableHeaderCell>Calculation Method</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
                 <TableHeaderCell>Actions</TableHeaderCell>
               </tr>
             </thead>
@@ -116,7 +116,7 @@ export default function ChargeTemplateTable({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center py-4">
+                  <td colSpan={5} className="text-center py-4">
                     <span>No Data Available</span>
                   </td>
                 </tr>

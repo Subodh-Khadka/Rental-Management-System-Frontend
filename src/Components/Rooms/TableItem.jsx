@@ -10,6 +10,7 @@ export default function TableItem({ room, index, onEdit, onDelete }) {
       <TableCell>{index + 1}</TableCell>
       <TableCell>{room.roomTitle}</TableCell>
       <TableCell>{room.roomPrice}</TableCell>
+      <TableCell>{room.isActive ? "Active" : "Inactive"}</TableCell>
       <TableCell className="flex">
         <Button
           variant="icon"

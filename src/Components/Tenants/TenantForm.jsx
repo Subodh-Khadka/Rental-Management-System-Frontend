@@ -9,6 +9,7 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
   const [phone, setPhone] = useState(tenant?.phoneNumber || "");
   const [email, setEmail] = useState(tenant?.emailAddress || "");
   const [room, setRoom] = useState(tenant?.roomId || "");
+  const [IsActive, setIsActive] = useState(tenant?.IsActive || false);
 
   function handleNameChange(e) {
     setName(e.target.value);
@@ -31,6 +32,7 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
       name: name,
       phoneNumber: phone,
       emailAddress: email,
+      isActive: IsActive, // boolean
       // room: room,
     };
 
@@ -39,6 +41,7 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
       phoneNumber: phone,
       emailAddress: email,
       roomId: room,
+      isActive: IsActive, // boolean
     };
 
     onSave(tenant ? updatedTenant : tenantToCreate);
@@ -96,6 +99,18 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
             className="bg-stone-100 shadow-sm p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
             required
             onChange={handleEmailChange}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="IsActive" className="font-bold">
+            Active:
+          </label>
+          <input
+            type="checkbox"
+            checked={IsActive || false} // boolean value
+            onChange={(e) => setIsActive(e.target.checked)}
+            className="w-5 h-5"
           />
         </div>
 

@@ -99,6 +99,7 @@ export default function TenantsTable({
                 <TableHeaderCell>Phone Number</TableHeaderCell>
                 <TableHeaderCell>Email Address</TableHeaderCell>
                 <TableHeaderCell>Room Assigned</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
                 <TableHeaderCell>Actions</TableHeaderCell>
               </tr>
             </thead>

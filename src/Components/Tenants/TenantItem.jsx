@@ -16,6 +16,7 @@ export default function TenantItem({ tenant, index, onEdit, onDelete }) {
           {tenant.emailAddress ? tenant.emailAddress : "N/A"}
         </TableCell>
         <TableCell>{tenant?.roomTitle || "N/A"}</TableCell>
+        <TableCell>{tenant.isActive ? "Active" : "Inactive"}</TableCell>
         <TableCell>
           <Button
             size="sm"

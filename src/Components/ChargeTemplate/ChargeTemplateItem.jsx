@@ -18,6 +18,7 @@ export default function ChargeTemplateItem({
         <TableCell>{template.defaultAmount}</TableCell>
         <TableCell>{template.isVariable ? "Yes" : "No"}</TableCell>
         <TableCell>{template.calculationMethod}</TableCell>
+        <TableCell>{template.isActive ? "Active" : "Inactive"}</TableCell>
         <TableCell>
           <Button
             size="sm"

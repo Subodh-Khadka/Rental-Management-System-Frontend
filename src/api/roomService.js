@@ -42,6 +42,7 @@ export async function createRoom(roomData) {
 
 // UPDATE a room
 export async function updateRoom(roomId, roomData) {
+  console.log(roomData);
   const response = await fetch(`${BASE_URL}/${roomId}`, {
     method: "PUT",
     headers: {
