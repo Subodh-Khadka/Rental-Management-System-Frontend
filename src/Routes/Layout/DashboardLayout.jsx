@@ -1,4 +1,4 @@
-import Sidebar from "../Layout/Sidebar";
+import Sidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
@@ -12,7 +12,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex min-h-screen text-sm relative">
       {showSidebar && (
-        <aside className={`w-64 bg-white text-black flex flex-col `}>
+        <aside className={`w-64 bg-white text-black flex flex-col`}>
           <Sidebar />
         </aside>
       )}

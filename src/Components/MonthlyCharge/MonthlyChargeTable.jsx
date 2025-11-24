@@ -23,7 +23,7 @@ export default function MonthlyChargeTable({ monthlyChargeSummaryData }) {
               monthlyChargeSummaryData.map((summary, index) => (
                 <MonthlyChargeItem
                   key={`${summary.roomName}-${summary.tenantName}-${summary.month}`}
-                  summary={summary} // matches prop in MonthlyChargeItem
+                  summary={summary}
                   index={index}
                 />
               ))

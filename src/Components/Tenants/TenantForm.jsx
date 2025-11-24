@@ -3,13 +3,17 @@ import Button from "../Shared/Table/Button/Button";
 import { MdOutlineCancel } from "react-icons/md";
 import { GrSave } from "react-icons/gr";
 import { FaUser } from "react-icons/fa";
+import { useNotification } from "../../context/NotificationContext";
 
 export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
+  const { addNotification } = useNotification();
   const [name, setName] = useState(tenant?.name || "");
   const [phone, setPhone] = useState(tenant?.phoneNumber || "");
   const [email, setEmail] = useState(tenant?.emailAddress || "");
   const [room, setRoom] = useState(tenant?.roomId || "");
   const [IsActive, setIsActive] = useState(tenant?.IsActive || false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleNameChange(e) {
     setName(e.target.value);
@@ -24,7 +28,7 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
     setRoom(e.target.value);
   }
 
-  function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const updatedTenant = {
@@ -32,8 +36,7 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
       name: name,
       phoneNumber: phone,
       emailAddress: email,
-      isActive: IsActive, // boolean
-      // room: room,
+      isActive: IsActive,
     };
 
     const tenantToCreate = {
@@ -41,11 +44,29 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
       phoneNumber: phone,
       emailAddress: email,
       roomId: room,
-      isActive: IsActive, // boolean
+      isActive: IsActive,
     };
 
-    onSave(tenant ? updatedTenant : tenantToCreate);
-  }
+    try {
+      setLoading(true);
+      if (tenant) {
+        await onSave(updatedTenant);
+        addNotification("success", "Tenant updated successfully");
+      } else {
+        await onSave(tenantToCreate);
+        addNotification("success", "Tenant created successfully");
+      }
+    } catch (err) {
+      if (tenant) {
+        addNotification("error", "Failed to update Tenant");
+      } else {
+        addNotification("error", "Failed to create Tenant");
+      }
+      setError(err.message || "Operation failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -57,8 +78,6 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
           <h5 className="font-bold">
             {tenant ? "Edit Tenant Details" : "Create New Tenant "}
           </h5>
-
-          {/* Example: Add an icon */}
           <FaUser className="text-gray-600" />
         </div>
 
@@ -108,7 +127,7 @@ export default function TenantForm({ tenant, onSave, onCancel, rooms }) {
           </label>
           <input
             type="checkbox"
-            checked={IsActive || false} // boolean value
+            checked={IsActive || false}
             onChange={(e) => setIsActive(e.target.checked)}
             className="w-5 h-5"
           />

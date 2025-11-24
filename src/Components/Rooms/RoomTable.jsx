@@ -6,6 +6,7 @@ import { updateRoom, createRoom } from "../../api/roomService";
 import { deleteRoom } from "../../api/roomService";
 import Button from "../Shared/Table/Button/Button";
 import { IoAddOutline } from "react-icons/io5";
+import { useNotification } from "../../context/NotificationContext";
 
 export default function RoomTable({
   roomData,
@@ -13,11 +14,13 @@ export default function RoomTable({
   onRoomDelete,
   onRoomCreate,
 }) {
+  const { addNotification } = useNotification();
+
   const [editingRoom, setEditingRoom] = useState(null);
   const [creatingRoom, setCreatingRoom] = useState(false);
 
   function handleEdit(room) {
-    setEditingRoom(room); // set the room to be edited
+    setEditingRoom(room);
   }
 
   async function handleSave(roomData) {
@@ -27,24 +30,24 @@ export default function RoomTable({
         onRoomUpdate(savedRoom);
         setEditingRoom(null);
       } else {
+        console.log(roomData);
         const newRoom = await createRoom(roomData);
         onRoomCreate(newRoom);
         setCreatingRoom(false);
       }
     } catch (err) {
       console.error("Error saving room,", err);
-      alert("Failed to save changes");
     }
   }
 
   async function handleDelete(room) {
     try {
       const deletedRoomId = await deleteRoom(room.roomId);
-      console.log(deletedRoomId);
       onRoomDelete(deletedRoomId);
+      addNotification("success", "Room deleted successfully");
     } catch (err) {
       console.log("Error deleting room:", err);
-      alert(err.message || "Failed to delete the room");
+      addNotification("error", "Failed to delete room");
     }
   }
 
@@ -59,7 +62,6 @@ export default function RoomTable({
         </section>
       )}
 
-      {/* Show RoomForm only if a room is being edited */}
       {editingRoom && (
         <section>
           <RoomForm
@@ -94,20 +96,15 @@ export default function RoomTable({
             </thead>
 
             <tbody>
-              {roomData.map(
-                (
-                  room,
-                  index // Changed from 'rooms' to 'roomData'
-                ) => (
-                  <TableItem
-                    key={room.roomId}
-                    room={room}
-                    index={index}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                )
-              )}
+              {roomData.map((room, index) => (
+                <TableItem
+                  key={room.roomId}
+                  room={room}
+                  index={index}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
             </tbody>
           </table>
         </div>

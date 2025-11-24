@@ -8,14 +8,9 @@ export default function RoomPage() {
     updateRoomInState,
     deleteRoomInState,
     createRoomInState,
-    // loadRooms,
     loading,
     error,
   } = useRooms();
-
-  // useEffect(() => {
-  //   loadRooms(); // fetch rooms only when this page mounts
-  // }, []);
 
   if (loading) return <p>Loading room data</p>;
   if (error) return <p>{error}</p>;

@@ -9,8 +9,8 @@ import {
   deleteTenant,
 } from "../../api/tenantsService";
 import Button from "../Shared/Table/Button/Button";
-
 import { IoAddOutline } from "react-icons/io5";
+import { useNotification } from "../../context/NotificationContext";
 
 export default function TenantsTable({
   tenantsData,
@@ -20,6 +20,7 @@ export default function TenantsTable({
   onTenantDelete,
   error,
 }) {
+  const { addNotification } = useNotification();
   const [editingTenant, setEditingTenant] = useState(null);
   const [creatingTenant, setCreatingTenant] = useState(false);
 
@@ -39,18 +40,17 @@ export default function TenantsTable({
         onTenantCreate(newTenant);
         setCreatingTenant(false);
       }
-    } catch (err) {
-      console.log("Error saving tenant", err);
-      alert("Failed To save changes");
-    }
+    } catch (err) {}
   }
 
   async function handleDelete(tenantId) {
     try {
       const deletedTenant = await deleteTenant(tenantId);
       onTenantDelete(tenantId);
+      addNotification("success", "Room deleted successfully");
     } catch (err) {
       console.log(err, "Error saving changes");
+      addNotification("error", "Failed to delete tenant");
     }
   }
 

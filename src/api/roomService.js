@@ -23,6 +23,7 @@ export async function getRoomById(roomId) {
 
 // CREATE a room
 export async function createRoom(roomData) {
+  console.log(roomData);
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: {

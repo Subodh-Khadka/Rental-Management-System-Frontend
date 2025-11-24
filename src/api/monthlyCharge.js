@@ -1,27 +1,5 @@
 const BASE_URL = "https://localhost:7148/api/monthlyCharge";
 
-// export async function generateMonthlyCharges(payload) {
-//   const response = await fetch(`${BASE_URL}/generate`, {
-//     method: "POST",
-//     headers: {
-//       "content-type": "application/json",
-//     },
-//     body: JSON.stringify(payload),
-//   });
-
-//   if (!response.ok) {
-//     throw new Error("Failed to generate monthly charges");
-//   }
-
-//   const result = await response.json();
-
-//   if (!result.success) {
-//     throw new Error(result.message || "Failed to generate charges");
-//   }
-
-//   return result.data;
-// }
-
 export async function generateMonthlyCharges(payload) {
   try {
     const response = await fetch(

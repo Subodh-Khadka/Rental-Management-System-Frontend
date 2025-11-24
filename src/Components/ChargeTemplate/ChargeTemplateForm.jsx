@@ -43,7 +43,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
       defaultAmount,
       isVariable,
       calculationMethod,
-      isActive: IsActive, // boolean,
+      isActive: IsActive,
       ...(template ? { chargeTemplateId: template.chargeTemplateId } : {}),
     };
 
@@ -66,9 +66,7 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
         <FaUser className="text-gray-600" />
       </div>
 
-      {/* Main content */}
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-        {/* Left column */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col">
             <label className="font-bold">Charge Type</label>
@@ -137,13 +135,12 @@ export default function ChargeTemplateForm({ template, onSave, onCancel }) {
             </label>
             <input
               type="checkbox"
-              checked={IsActive || false} // boolean value
+              checked={IsActive || false}
               onChange={(e) => setIsActive(e.target.checked)}
               className="w-5 h-5"
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex gap-3 justify-start">
             <Button
               variant="black"

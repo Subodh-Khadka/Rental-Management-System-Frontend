@@ -26,7 +26,6 @@ export default function RentPaymentForm({
     rentPayment?.monthlyCharges || []
   );
 
-  // Update Room, Tenant, RoomPrice when contract is selected
   useEffect(() => {
     if (!rentPayment && selectedContractId) {
       const contract = rentalContracts.find(
@@ -40,7 +39,6 @@ export default function RentPaymentForm({
     }
   }, [selectedContractId, rentalContracts, rentPayment]);
 
-  // Compute Total dynamically
   const totalAmount =
     roomPrice +
     monthlyCharges.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
@@ -67,7 +65,6 @@ export default function RentPaymentForm({
       dueAmount,
     };
 
-    // only add paymentId if editing
     if (rentPayment?.paymentId) {
       rentPaymentToCreate.paymentId = rentPayment.paymentId;
     }
@@ -83,7 +80,6 @@ export default function RentPaymentForm({
       onSubmit={handleSubmit}
       className="bg-white p-4 rounded-xl flex flex-col gap-4 mb-3"
     >
-      {/* Header */}
       <div className="flex items-center gap-2">
         <h5 className="font-bold">
           {rentPayment ? "Edit Payment Details" : "Create New Payment"}
@@ -91,9 +87,7 @@ export default function RentPaymentForm({
         <FaUser className="text-gray-600" />
       </div>
 
-      {/* Main content */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left column */}
         <div className="flex flex-col gap-4">
           {!rentPayment ? (
             <div className="flex flex-col">

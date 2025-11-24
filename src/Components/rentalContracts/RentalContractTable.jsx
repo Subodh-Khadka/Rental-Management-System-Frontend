@@ -51,8 +51,8 @@ export default function RentalContractTable({
 
   async function handleDelete(rentalContractId) {
     try {
-      await deleteRentalContract(rentalContractId); // we don’t need response
-      onRentalContractDelete(rentalContractId); // pass ID directly
+      await deleteRentalContract(rentalContractId);
+      onRentalContractDelete(rentalContractId);
     } catch (err) {
       console.log(err, "Error deleting contract");
     }

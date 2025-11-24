@@ -24,9 +24,6 @@ export default function RentalContractForm({
     rentalContract?.endDate ? formatDateTimeLocal(rentalContract.endDate) : ""
   );
 
-  // find the tenant object
-  // const tenantName = tenants.find((t) => t.tenantId === tenant)?.name || "";
-
   function handleTenantChange(e) {
     setTenant(e.target.value);
   }
@@ -82,8 +79,6 @@ export default function RentalContractForm({
           <h5 className="font-bold">
             {rentalContract ? "Edit Contract Details" : "Create New Contract "}
           </h5>
-
-          {/* Example: Add an icon */}
           <FaUser className="text-gray-600" />
         </div>
 
@@ -171,27 +166,6 @@ export default function RentalContractForm({
             onChange={handleTermsChange}
           />
         </div>
-
-        {/* {!tenant && (
-          <div className="form-div flex flex-col gap-2">
-            <label className="font-bold">Room</label>
-            <select
-              value={room}
-              onChange={handleRoomChange}
-              required
-              className="bg-stone-100 shadow-sm p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
-            >
-              <option value="" disabled>
-                ---Select a Room---
-              </option>
-              {rooms.map((room) => (
-                <option key={room.roomId} value={room.roomId}>
-                  {room.roomTitle}
-                </option>
-              ))}
-            </select>
-          </div>
-        )} */}
 
         <div className="form-div flex gap-3 p-2 items-center">
           <Button

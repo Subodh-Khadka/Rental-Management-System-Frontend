@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
 import useChargeTemplate from "../hooks/useChargeTemplate";
-import { generateMonthlyCharges } from "../api/monthlyCharge";
 import { getRentPaymentsByMonth } from "../api/rentPayment";
+import {
+  getMeterReadingByPaymentAndMonth,
+  updateMeterReading,
+  createMeterReading,
+} from "../api/meterReading";
+import { generateMonthlyCharges } from "../api/monthlyCharge";
 
 export default function GenerateMonthlyCharge() {
   const { chargeTemplates } = useChargeTemplate();
   const [rentPayments, setRentPayments] = useState([]);
-
-  // const { rentPayments } = useRentPayments();
-
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [currentReadings, setCurrentReadings] = useState({});
+  const [previousReadings, setPreviousReadings] = useState({});
+  const [readingIds, setReadingIds] = useState({});
   const [unitsData, setUnitsData] = useState({});
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  // Load rent payments and meter readings
   useEffect(() => {
     const fetchPayments = async () => {
       if (!selectedMonth) {
@@ -21,14 +27,47 @@ export default function GenerateMonthlyCharge() {
         return;
       }
 
-      const data = await getRentPaymentsByMonth(selectedMonth);
-      setRentPayments(data);
+      const payments = await getRentPaymentsByMonth(selectedMonth);
+      setRentPayments(payments);
+
+      const current = {};
+      const previous = {};
+      const ids = {};
+
+      for (let p of payments) {
+        const reading = await getMeterReadingByPaymentAndMonth(
+          p.paymentId,
+          selectedMonth
+        );
+
+        if (reading) {
+          previous[p.paymentId] = reading.previousReading;
+          current[p.paymentId] = reading.currentReading;
+          ids[p.paymentId] = reading.meterReadingId;
+        } else {
+          previous[p.paymentId] = 0;
+          current[p.paymentId] = 0;
+          ids[p.paymentId] = null;
+        }
+      }
+
+      setPreviousReadings(previous);
+      setCurrentReadings(current);
+      setReadingIds(ids);
     };
 
     fetchPayments();
   }, [selectedMonth]);
 
-  // Track unit input changes safely
+  // Handle electricity reading input
+  const handleReadingChange = (paymentId, value) => {
+    setCurrentReadings((prev) => ({
+      ...prev,
+      [paymentId]: value === "" ? 0 : Number(value),
+    }));
+  };
+
+  // Handle other variable charge input
   const handleUnitChange = (paymentId, templateId, value) => {
     setUnitsData((prev) => ({
       ...prev,
@@ -39,59 +78,104 @@ export default function GenerateMonthlyCharge() {
     }));
   };
 
-  // Calculate total charges for a given payment (room)
+  // Calculate total charges for a payment (room)
   const calculateTotal = (paymentId) => {
     if (!chargeTemplates) return 0;
+
     return chargeTemplates.reduce((sum, t) => {
-      const units = unitsData[paymentId]?.[t.chargeTemplateId] || 0;
+      let units = 0;
+
+      if (t.chargeType === "Electricity") {
+        units =
+          (currentReadings[paymentId] || 0) -
+          (previousReadings[paymentId] || 0);
+        if (units < 0) units = 0;
+      } else if (t.isVariable) {
+        units = unitsData[paymentId]?.[t.chargeTemplateId] || 0;
+      }
+
       const amount = t.isVariable ? units * t.defaultAmount : t.defaultAmount;
       return sum + amount;
     }, 0);
   };
 
-  // Bulk generate charges via backend
+  // Generate monthly charges (meter readings + variable charges)
   const handleGenerateCharges = async () => {
     if (!selectedMonth) {
       setMessage({ type: "error", text: "Select a month first!" });
       return;
     }
 
-    // Check if all variable charges have values
-    const missing = rentPayments.some((p) =>
-      chargeTemplates.some(
-        (t) =>
-          t.isVariable &&
-          (unitsData[p.paymentId]?.[t.chargeTemplateId] === undefined ||
-            unitsData[p.paymentId]?.[t.chargeTemplateId] < 0)
-      )
-    );
-    if (missing) {
-      setMessage({ type: "error", text: "Please fill all required units!" });
-      return;
-    }
-
     setLoading(true);
     setMessage(null);
 
-    const result = await generateMonthlyCharges({
-      month: selectedMonth,
-      unitsData: unitsData,
-    });
+    try {
+      // Create/update meter readings
+      const meterPromises = rentPayments.map(async (p) => {
+        const previous = parseFloat(previousReadings[p.paymentId]) || 0;
+        const current = parseFloat(currentReadings[p.paymentId]) || 0;
 
-    if (!result.success) {
-      setMessage({ type: "error", text: result.message });
-    } else {
-      setMessage({ type: "success", text: result.message });
+        const meterReadingDto = {
+          PaymentId: p.paymentId,
+          Month: selectedMonth,
+          PreviousReading: previous,
+          CurrentReading: current,
+        };
+
+        if (readingIds[p.paymentId]) {
+          // update existing meter reading
+          return updateMeterReading({
+            ...meterReadingDto,
+            MeterReadingId: readingIds[p.paymentId],
+          });
+        } else {
+          // create new meter reading
+          return createMeterReading(meterReadingDto);
+        }
+      });
+
+      await Promise.all(meterPromises);
+
+      // Prepare payload for backend with correct shape
+      const payload = {
+        month: selectedMonth,
+        payments: rentPayments.map((p) => ({
+          paymentId: p.paymentId,
+          templates: chargeTemplates
+            .filter((t) => t.isVariable)
+            .map((t) => ({
+              templateId: t.chargeTemplateId,
+              units:
+                t.chargeType === "Electricity"
+                  ? Math.max(
+                      (currentReadings[p.paymentId] || 0) -
+                        (previousReadings[p.paymentId] || 0),
+                      0
+                    )
+                  : unitsData[p.paymentId]?.[t.chargeTemplateId] || 0,
+            })),
+        })),
+      };
+
+      // Call backend to generate charges
+      await generateMonthlyCharges(payload);
+
+      setMessage({
+        type: "success",
+        text: "Charges generated successfully!",
+      });
+    } catch (error) {
+      console.error("Error generating charges:", error);
+      setMessage({ type: "error", text: "Error generating charges" });
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow">
       <h1 className="text-xl font-bold mb-4">Generate Monthly Charges</h1>
 
-      {/* Feedback message */}
       {message && (
         <div
           className={`mb-4 p-2 rounded ${
@@ -104,7 +188,6 @@ export default function GenerateMonthlyCharge() {
         </div>
       )}
 
-      {/* Month Selector */}
       <div className="mb-4">
         <label className="mr-2 font-semibold">Select Month:</label>
         <input
@@ -115,7 +198,6 @@ export default function GenerateMonthlyCharge() {
         />
       </div>
 
-      {/* Charges Table */}
       <div className="overflow-x-auto">
         <table className="table-auto w-full border text-sm">
           <thead>
@@ -131,19 +213,28 @@ export default function GenerateMonthlyCharge() {
             </tr>
           </thead>
           <tbody>
-            {rentPayments?.map((p) => (
+            {rentPayments.map((p) => (
               <tr key={p.paymentId}>
                 <td className="border px-2 py-1">{p.roomTitle}</td>
                 <td className="border px-2 py-1">{p.tenantName}</td>
-                {chargeTemplates?.map((t) => (
+                {chargeTemplates.map((t) => (
                   <td key={t.chargeTemplateId} className="border px-2 py-1">
-                    {t.isVariable ? (
+                    {t.chargeType === "Electricity" ? (
                       <input
                         type="number"
                         min={0}
-                        step="0.01"
+                        value={currentReadings[p.paymentId] ?? ""}
+                        onChange={(e) =>
+                          handleReadingChange(p.paymentId, e.target.value)
+                        }
+                        className="w-20 border rounded p-1"
+                      />
+                    ) : t.isVariable ? (
+                      <input
+                        type="number"
+                        min={0}
                         value={
-                          unitsData[p.paymentId]?.[t.chargeTemplateId] || ""
+                          unitsData[p.paymentId]?.[t.chargeTemplateId] ?? ""
                         }
                         onChange={(e) =>
                           handleUnitChange(
@@ -153,7 +244,6 @@ export default function GenerateMonthlyCharge() {
                           )
                         }
                         className="w-20 border rounded p-1"
-                        disabled={!selectedMonth}
                       />
                     ) : (
                       t.defaultAmount
@@ -169,7 +259,6 @@ export default function GenerateMonthlyCharge() {
         </table>
       </div>
 
-      {/* Action Button */}
       <button
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
         onClick={handleGenerateCharges}
@@ -180,132 +269,3 @@ export default function GenerateMonthlyCharge() {
     </div>
   );
 }
-
-// import { useEffect, useState } from "react";
-// import useRentPayments from "../hooks/useRentPayment";
-// import useChargeTemplate from "../hooks/useChargeTemplate";
-// import { generateMonthlyCharges } from "../api/monthlyCharge";
-
-// export default function GenerateMonthlyCharge() {
-//   const [chargeTemplates, setChargeTemplates] = useState([]);
-//   const [rentPayments, setRentPayments] = useState([]);
-//   const [selectedMonth, setSelectedMonth] = useState("");
-//   const [unitsData, setUnitsData] = useState({}); // { paymentId: { templateId: units } }
-//   const [loading, setLoading] = useState(false);
-
-//   const { chargeTemplates: templates } = useChargeTemplate();
-//   const { rentPayments: payments } = useRentPayments();
-
-//   // sync hook data into local state safely
-//   useEffect(() => {
-//     if (templates) setChargeTemplates(templates);
-//   }, [templates]);
-
-//   useEffect(() => {
-//     if (payments) setRentPayments(payments);
-//   }, [payments]);
-
-//   // Track unit input changes
-//   const handleUnitChange = (paymentId, templateId, value) => {
-//     setUnitsData((prev) => ({
-//       ...prev,
-//       [paymentId]: {
-//         ...(prev[paymentId] || {}), // ensure object exists
-//         [templateId]: value === "" ? 0 : parseFloat(value),
-//       },
-//     }));
-//   };
-
-//   // Bulk generate charges via backend
-//   const handleGenerateCharges = async () => {
-//     if (!selectedMonth) {
-//       alert("Select a month first!");
-//       return;
-//     }
-
-//     setLoading(true);
-//     try {
-//       await generateMonthlyCharges({
-//         month: selectedMonth,
-//         unitsData: unitsData,
-//       });
-
-//       alert("Monthly charges generated successfully!");
-//     } catch (err) {
-//       console.error(err);
-//       alert("Error generating charges");
-//     }
-//     setLoading(false);
-//   };
-
-//   return (
-//     <div className="p-6 bg-white rounded-2xl">
-//       <h1 className="text-xl font-bold mb-4">Generate Monthly Charges</h1>
-
-//       <div className="mb-4">
-//         <label className="mr-2 font-semibold">Select Month:</label>
-//         <input
-//           type="month"
-//           value={selectedMonth}
-//           onChange={(e) => setSelectedMonth(e.target.value)}
-//           className="border p-1 rounded"
-//         />
-//       </div>
-
-//       <div className="overflow-x-auto">
-//         <table className="table-auto w-full border">
-//           <thead>
-//             <tr className="bg-gray-200">
-//               <th className="border px-2 py-1">Room</th>
-//               <th className="border px-2 py-1">Tenant</th>
-//               {chargeTemplates.map((t) => (
-//                 <th key={t.chargeTemplateId} className="border px-2 py-1">
-//                   {t.chargeType} {t.isVariable ? "(Units)" : ""}
-//                 </th>
-//               ))}
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {rentPayments.map((p) => (
-//               <tr key={p.paymentId}>
-//                 <td className="border px-2 py-1">{p.roomTitle}</td>
-//                 <td className="border px-2 py-1">{p.tenantName}</td>
-//                 {chargeTemplates.map((t) => (
-//                   <td key={t.chargeTemplateId} className="border px-2 py-1">
-//                     {t.isVariable ? (
-//                       <input
-//                         type="number"
-//                         min={0}
-//                         value={
-//                           unitsData[p.paymentId]?.[t.chargeTemplateId] || 0
-//                         }
-//                         onChange={(e) =>
-//                           handleUnitChange(
-//                             p.paymentId,
-//                             t.chargeTemplateId,
-//                             e.target.value
-//                           )
-//                         }
-//                         className="w-16 border rounded p-1"
-//                       />
-//                     ) : (
-//                       t.defaultAmount
-//                     )}
-//                   </td>
-//                 ))}
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-
-//       <button
-//         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-//         onClick={handleGenerateCharges}
-//         disabled={loading}
-//       >
-//         {loading ? "Generating..." : "Generate Charges"}
-//       </button>
-//     </div>
-//   );
-// }

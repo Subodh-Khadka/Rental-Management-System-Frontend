@@ -3,11 +3,16 @@ import Button from "../Shared/Table/Button/Button";
 import { MdOutlineCancel } from "react-icons/md";
 import { GrSave } from "react-icons/gr";
 
+import { useNotification } from "../../context/NotificationContext";
+
 export default function RoomForm({ room, onCancel, onSave }) {
-  // If `room` exists, it's edit mode
+  const { addNotification } = useNotification();
+
   const [title, setTitle] = useState(room?.roomTitle || "");
   const [price, setPrice] = useState(room?.roomPrice || "");
   const [IsActive, setIsActive] = useState(room?.IsActive || false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -17,23 +22,41 @@ export default function RoomForm({ room, onCancel, onSave }) {
     setPrice(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const roomToCreate = {
       roomTitle: title,
       roomPrice: price,
-      isActive: IsActive, // boolean
+      isActive: IsActive,
     };
 
     const updatedRoom = {
       ...room,
       roomTitle: title,
       roomPrice: price,
-      isActive: IsActive, // boolean
+      isActive: IsActive,
     };
 
-    onSave(room ? updatedRoom : roomToCreate);
+    try {
+      setLoading(true);
+      if (room) {
+        await onSave(updatedRoom);
+        addNotification("success", "Room updated successfully");
+      } else {
+        await onSave(roomToCreate);
+        addNotification("success", "Room created successfully");
+      }
+    } catch (err) {
+      if (room) {
+        addNotification("error", "Failed to update room");
+      } else {
+        addNotification("error", "Failed to create room");
+      }
+      setError(err.message || "Operation failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,7 +99,7 @@ export default function RoomForm({ room, onCancel, onSave }) {
         </label>
         <input
           type="checkbox"
-          checked={IsActive || false} // boolean value
+          checked={IsActive || false}
           onChange={(e) => setIsActive(e.target.checked)}
           className="w-5 h-5"
         />
@@ -97,6 +120,9 @@ export default function RoomForm({ room, onCancel, onSave }) {
           size="sm"
           className="flex items-center gap-1"
           type="submit"
+          isLoading={loading}
+          disabled={loading === true}
+          loadingText="saving..."
         >
           <GrSave /> Save
         </Button>

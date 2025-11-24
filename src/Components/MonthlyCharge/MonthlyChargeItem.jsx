@@ -10,7 +10,6 @@ export default function MonthlyChargeItem({ summary, index }) {
       <TabelCell>{summary.totalAmount}</TabelCell>
       <TabelCell>{summary.status}</TabelCell>
       <TabelCell>
-        {/* Example actions */}
         <button className="text-blue-500">View</button>
         <button className="text-red-500 ml-2">Delete</button>
       </TabelCell>

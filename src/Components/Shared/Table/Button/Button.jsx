@@ -3,6 +3,8 @@ export default function Button({
   variant = "primary",
   size = "md",
   className = "",
+  isLoading = false,
+  loadingText = "Loading",
   ...props
 }) {
   let baseClasses = "rounded font-medium transition-colors duration-300";
@@ -24,9 +26,17 @@ export default function Button({
   return (
     <button
       className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      disabled={isLoading || props.disabled}
       {...props}
     >
-      {children}
+      {isLoading ? (
+        <>
+          <span className="loader mr-2"></span>
+          {loadingText}
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }
