@@ -17,8 +17,6 @@ export default function GenerateRentPayment() {
   return (
     <div className="p-6 bg-white rounded-2xl shadow">
       <h1 className="text-xl font-bold mb-4">Generate Rent Payments</h1>
-
-      {/* Month Selector */}
       <div className="mb-4">
         <label className="mr-2 font-semibold">Select Month:</label>
         <input

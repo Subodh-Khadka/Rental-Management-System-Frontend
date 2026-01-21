@@ -32,7 +32,7 @@ export default function RentPaymentTable({
       if (editingRentPayment) {
         const updatedRentPayment = await updateRentPayment(
           rentPayment.paymentId,
-          rentPayment
+          rentPayment,
         );
         onRentPaymentUpdate(updatedRentPayment);
         setEditingRentPayment(null);
@@ -106,6 +106,7 @@ export default function RentPaymentTable({
                 <TableHeaderCell>Total</TableHeaderCell>
                 <TableHeaderCell>Paid</TableHeaderCell>
                 <TableHeaderCell>Due</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
                 <TableHeaderCell>Actions</TableHeaderCell>
               </tr>
             </thead>

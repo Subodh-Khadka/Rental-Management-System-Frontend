@@ -1,8 +1,5 @@
 import TableRow from "../Shared/Table/TableRow";
 import TableCell from "../Shared/Table/TabelCell";
-
-// import { formatDateDisplay } from "../../utils/dateUtils";
-
 import Button from "../Shared/Table/Button/Button";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -25,6 +22,18 @@ export default function RentPaymentItem({
         <TableCell>{rentPayment.totalAmount}</TableCell>
         <TableCell>{rentPayment?.paidAmount}</TableCell>
         <TableCell>{rentPayment?.dueAmount}</TableCell>
+        <TableCell>
+          <span
+            className={`px-2 py-1 rounded text-xs font-semibold
+                   ${
+                     rentPayment?.status === "Pending"
+                       ? "bg-yellow-500 text-white"
+                       : "bg-green-600 text-white"
+                   }`}
+          >
+            {rentPayment?.status}
+          </span>
+        </TableCell>
         <TableCell>
           <Button
             size="sm"

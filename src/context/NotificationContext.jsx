@@ -1,4 +1,3 @@
-// src/context/NotificationContext.jsx
 import { createContext, useContext, useState, useCallback } from "react";
 
 const NotificationContext = createContext();
@@ -6,18 +5,15 @@ const NotificationContext = createContext();
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
-  // add a new notification
   const addNotification = useCallback((type, message) => {
     const id = Date.now();
     setNotifications((prev) => [...prev, { id, type, message }]);
 
-    // auto-remove after 3 seconds
     setTimeout(() => {
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     }, 1500);
   }, []);
 
-  // remove manually if needed
   const removeNotification = (id) =>
     setNotifications((prev) => prev.filter((n) => n.id !== id));
 

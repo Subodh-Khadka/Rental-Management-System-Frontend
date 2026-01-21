@@ -5,12 +5,23 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 export default function TableItem({ room, index, onEdit, onDelete }) {
+  const statusClasses = room.isActive
+    ? "bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold"
+    : "bg-gray-800 text-white px-2 py-1 rounded-md text-xs font-semibold";
+
   return (
     <TableRow key={room.roomId}>
       <TableCell>{index + 1}</TableCell>
       <TableCell>{room.roomTitle}</TableCell>
       <TableCell>{room.roomPrice}</TableCell>
-      <TableCell>{room.isActive ? "Active" : "Inactive"}</TableCell>
+
+      {/* Status cell */}
+      <TableCell>
+        <span className={statusClasses}>
+          {room.isActive ? "Active" : "Inactive"}
+        </span>
+      </TableCell>
+
       <TableCell className="flex">
         <Button
           variant="icon"

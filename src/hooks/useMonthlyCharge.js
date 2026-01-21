@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import {
   getmonthlyCharges,
   getMonthlyChargeSummary,
+  getMonthlyChargesByRoomAndMonth, // new API call
 } from "../api/monthlyCharge";
 
-export default function useChargeTemplate() {
+export default function useMonthlyCharge() {
   const [monthlyCharges, setMonthlyCharges] = useState([]);
   const [monthlyChargesSummary, setMonthlyChargeSummary] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Load all charges
   const loadMonthlyCharges = async () => {
     setIsLoading(true);
     setError(null);
@@ -23,10 +25,10 @@ export default function useChargeTemplate() {
     }
   };
 
+  // Load summary
   const loadMonthlyChargesSummary = async () => {
     setIsLoading(true);
     setError(null);
-
     try {
       const data = await getMonthlyChargeSummary();
       setMonthlyChargeSummary(data);
@@ -37,12 +39,24 @@ export default function useChargeTemplate() {
     }
   };
 
-  useEffect(() => {
-    loadMonthlyCharges();
-    loadMonthlyChargesSummary();
-  }, []);
+  // Load charges by room + month
+  const loadMonthlyChargesByRoomAndMonth = async (roomId, month) => {
+    if (!roomId || !month) return;
 
-  //create payment in state
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const data = await getMonthlyChargesByRoomAndMonth(roomId, month);
+      setMonthlyCharges(data);
+    } catch (err) {
+      setError(err.message || "Failed to load filtered charges");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  //create charge in state
   const createMonthlyChargeInState = async (newMonthlyCharge) => {
     setMonthlyCharges((prevMonthlyCharges) => [
       newMonthlyCharge,
@@ -50,34 +64,58 @@ export default function useChargeTemplate() {
     ]);
   };
 
-  // update payment in the state
-  const updateMonthlyChargeInState = async (updatedMonthlyCharge) => {
+  // // update charge in the state
+  // const updateMonthlyChargeInState = async (updatedMonthlyCharge) => {
+  //   setMonthlyCharges((prevMonthlyCharges) =>
+  //     prevMonthlyCharges.map((charge) =>
+  //       charge.monthlyChargeId === updatedMonthlyCharge.monthlyChargeId
+  //         ? updatedMonthlyCharge
+  //         : charge,
+  //     ),
+  //   );
+  // };
+  const updateMonthlyChargeInState = (updatedMonthlyCharge) => {
     setMonthlyCharges((prevMonthlyCharges) =>
       prevMonthlyCharges.map((charge) =>
         charge.monthlyChargeId === updatedMonthlyCharge.monthlyChargeId
-          ? updatedMonthlyCharge
-          : charge
-      )
+          ? {
+              ...charge,
+              ...updatedMonthlyCharge, // merge the updated fields
+              amount: parseFloat(updatedMonthlyCharge.amount),
+              units:
+                updatedMonthlyCharge.units !== null
+                  ? parseFloat(updatedMonthlyCharge.units)
+                  : null,
+            }
+          : charge,
+      ),
     );
   };
 
-  //delete payment In State
+  //delete charge In State
   const deleteMonthlyChargeInState = async (monthlyChargeId) => {
     setMonthlyCharges((prevMonthlyCharges) =>
       prevMonthlyCharges.filter(
-        (charge) => charge.monthlyChargeId !== monthlyChargeId
-      )
+        (charge) => charge.monthlyChargeId !== monthlyChargeId,
+      ),
     );
   };
 
+  useEffect(() => {
+    loadMonthlyCharges();
+    loadMonthlyChargesSummary();
+  }, []);
+
   return {
     monthlyCharges,
+    monthlyChargesSummary,
     error,
     isLoading,
     loadMonthlyCharges,
+    loadMonthlyChargesSummary,
+    loadMonthlyChargesByRoomAndMonth, // expose filtering function
     updateMonthlyChargeInState,
     createMonthlyChargeInState,
     deleteMonthlyChargeInState,
-    monthlyChargesSummary,
   };
 }

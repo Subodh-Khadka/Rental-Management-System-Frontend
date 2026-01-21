@@ -69,16 +69,12 @@ export async function deleteRoom(roomId) {
   if (!response.ok) {
     throw new Error(`Failed to delete room: ${response.statusText}`);
   }
-
-  // If 204 No Content, just return ID
   if (response.status === 204) return roomId;
 
-  // Try parsing JSON if body exists
   let result;
   try {
     result = await response.json();
   } catch {
-    // Empty or invalid JSON, assume success
     return roomId;
   }
 
@@ -86,5 +82,5 @@ export async function deleteRoom(roomId) {
     throw new Error(result.message || "Failed to delete room");
   }
 
-  return roomId; // return the ID to update frontend state
+  return roomId;
 }

@@ -10,7 +10,7 @@ export async function generateMonthlyCharges(payload) {
           "content-type": "application/json",
         },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     const result = await response.json();
@@ -90,22 +90,32 @@ export async function createMonthlyCharge(monthlyCharge) {
 }
 
 export async function updateMonthlyCharge(monthlyChargeId, monthlyCharge) {
-  const response = await fetch(`${BASE_URL}/${monthlyChargeId}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(monthlyCharge),
-  });
+  let response, result;
 
-  if (!response.ok) {
-    throw new Error("failed to update charge");
+  try {
+    response = await fetch(`${BASE_URL}/${monthlyChargeId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(monthlyCharge),
+    });
+  } catch (err) {
+    throw new Error("Network error: " + err.message);
   }
 
-  const result = await response.json();
+  try {
+    result = await response.json();
+  } catch (err) {
+    throw new Error("Failed to parse server response");
+  }
 
+  // check HTTP status
+  if (!response.ok) {
+    throw new Error(result?.message || `Server returned ${response.status}`);
+  }
+
+  // check API-level success
   if (!result.success) {
-    throw new Error(result.message || "failed to update charge");
+    throw new Error(result?.message || "Failed to update charge");
   }
 
   return result.data;
@@ -140,4 +150,26 @@ export async function getMonthlyChargeSummary() {
     throw new Error(result.message || "failed to fetch summary");
   }
   return result.data;
+}
+
+export async function getMonthlyChargesByRoomAndMonth(roomId, month) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/by-room-month/${roomId}/${month}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch monthly charges");
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to fetch monthly charges");
+    }
+
+    return result.data;
+  } catch (error) {
+    throw new Error(error.message || "Unexpected error while fetching charges");
+  }
 }

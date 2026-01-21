@@ -37,7 +37,7 @@ export default function GenerateMonthlyCharge() {
       for (let p of payments) {
         const reading = await getMeterReadingByPaymentAndMonth(
           p.paymentId,
-          selectedMonth
+          selectedMonth,
         );
 
         if (reading) {
@@ -110,60 +110,35 @@ export default function GenerateMonthlyCharge() {
     setMessage(null);
 
     try {
-      // Create/update meter readings
-      const meterPromises = rentPayments.map(async (p) => {
-        const previous = parseFloat(previousReadings[p.paymentId]) || 0;
-        const current = parseFloat(currentReadings[p.paymentId]) || 0;
-
-        const meterReadingDto = {
-          PaymentId: p.paymentId,
-          Month: selectedMonth,
-          PreviousReading: previous,
-          CurrentReading: current,
-        };
-
-        if (readingIds[p.paymentId]) {
-          // update existing meter reading
-          return updateMeterReading({
-            ...meterReadingDto,
-            MeterReadingId: readingIds[p.paymentId],
-          });
-        } else {
-          // create new meter reading
-          return createMeterReading(meterReadingDto);
-        }
-      });
-
-      await Promise.all(meterPromises);
-
-      // Prepare payload for backend with correct shape
       const payload = {
-        month: selectedMonth,
+        month: selectedMonth, // "2026-01"
         payments: rentPayments.map((p) => ({
           paymentId: p.paymentId,
-          templates: chargeTemplates
-            .filter((t) => t.isVariable)
-            .map((t) => ({
-              templateId: t.chargeTemplateId,
-              units:
-                t.chargeType === "Electricity"
-                  ? Math.max(
-                      (currentReadings[p.paymentId] || 0) -
-                        (previousReadings[p.paymentId] || 0),
-                      0
-                    )
-                  : unitsData[p.paymentId]?.[t.chargeTemplateId] || 0,
-            })),
+          templates: chargeTemplates.map((t) => ({
+            templateId: t.chargeTemplateId,
+            units:
+              t.chargeType === "Electricity"
+                ? currentReadings[p.paymentId] || 0
+                : unitsData[p.paymentId]?.[t.chargeTemplateId] || 0,
+          })),
         })),
       };
 
-      // Call backend to generate charges
-      await generateMonthlyCharges(payload);
+      console.log("Payload sent to backend:", payload);
 
-      setMessage({
-        type: "success",
-        text: "Charges generated successfully!",
-      });
+      const response = await generateMonthlyCharges(payload);
+
+      if (response.success) {
+        setMessage({
+          type: "success",
+          text: "Charges generated successfully!",
+        });
+      } else {
+        setMessage({
+          type: "error",
+          text: response.message || "Error generating charges",
+        });
+      }
     } catch (error) {
       console.error("Error generating charges:", error);
       setMessage({ type: "error", text: "Error generating charges" });
@@ -240,7 +215,7 @@ export default function GenerateMonthlyCharge() {
                           handleUnitChange(
                             p.paymentId,
                             t.chargeTemplateId,
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className="w-20 border rounded p-1"

@@ -21,8 +21,6 @@ export default function Register() {
     setError("");
     try {
       await register(formData);
-      //   await login({ email: formData.email, password: formData.password });
-      //   navigate("/"); // redirect to dashboard
     } catch (err) {
       setError(err.message || "Registration failed");
     }

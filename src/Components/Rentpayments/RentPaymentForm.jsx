@@ -12,24 +12,25 @@ export default function RentPaymentForm({
   rentalContracts,
 }) {
   const [selectedContractId, setSelectedContractId] = useState(
-    rentPayment?.rentalContractId || ""
+    rentPayment?.rentalContractId || "",
   );
   const [paidAmount, setPaidAmount] = useState(rentPayment?.paidAmount || 0);
   const [paymentDate, setPaymentDate] = useState(
-    formatDateTimeLocal(rentPayment?.paymentMonth) || ""
+    formatDateTimeLocal(rentPayment?.paymentMonth) || "",
   );
 
   const [roomTitle, setRoomTitle] = useState(rentPayment?.roomTitle || "");
   const [tenantName, setTenantName] = useState(rentPayment?.tenantName || "");
   const [roomPrice, setRoomPrice] = useState(rentPayment?.roomPrice || 0);
+  const [status, setStatus] = useState(rentPayment?.status || "Pending");
   const [monthlyCharges, setMonthlyCharges] = useState(
-    rentPayment?.monthlyCharges || []
+    rentPayment?.monthlyCharges || [],
   );
 
   useEffect(() => {
     if (!rentPayment && selectedContractId) {
       const contract = rentalContracts.find(
-        (c) => c.rentalContractId === selectedContractId
+        (c) => c.rentalContractId === selectedContractId,
       );
       if (contract) {
         setRoomTitle(contract.roomTitle);
@@ -63,6 +64,7 @@ export default function RentPaymentForm({
       paidAmount,
       totalAmount,
       dueAmount,
+      status,
     };
 
     if (rentPayment?.paymentId) {
@@ -150,7 +152,6 @@ export default function RentPaymentForm({
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex gap-3 justify-start">
             <Button
               variant="black"
@@ -172,7 +173,6 @@ export default function RentPaymentForm({
           </div>
         </div>
 
-        {/* Right column */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col">
             <label className="font-bold">Total</label>
@@ -201,6 +201,17 @@ export default function RentPaymentForm({
               className={inputClass}
               readOnly
             />
+          </div>
+          <div className="flex flex-col">
+            <label className="font-bold">Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className={inputClass}
+            >
+              <option value="Pending">Pending</option>
+              <option value="Paid">Paid</option>
+            </select>
           </div>
         </div>
       </div>

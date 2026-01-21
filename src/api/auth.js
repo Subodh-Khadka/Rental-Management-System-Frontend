@@ -1,4 +1,4 @@
-// src/api/auth.js
+
 const API_URL = "https://localhost:7148/api/Auth";
 
 export async function registerUser(
